@@ -11,20 +11,19 @@ const CHARS_IN_POKEMON_NAMES = "-2zyxwvutsrqponmlkjihgfedcba";
 const ARROW_UP_CODE = "ArrowUp";
 const ARROW_DOWN_CODE = "ArrowDown";
 const ENTER_CODE = "Enter";
-const BACKSPACE_CODE = "Backspace";
 
 let typesRecord;
 let typePublisher;
 let pokemonTrie;
 let pokemonPublisher;
-let pokemonSuggestions;
 let P;
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
   P = new Pokedex.Pokedex();
   try {
     initTypes(P);
     initPokemon(P);
+    new GuideController();
   } catch (e) {
     console.error(e);
   }
@@ -85,7 +84,6 @@ async function initPokemon(P) {
 
   const suggestions = new PokemonSuggestionList();
   pokemonPublisher.subscribe("pokemon-suggestions", suggestions);
-  pokemonSuggestions = suggestions;
 
   const pokemonTypeStat = new PokemonTypeStat();
   pokemonPublisher.subscribe("pokemon-type-stat", pokemonTypeStat);
@@ -255,14 +253,6 @@ async function getPokemonTypes(name) {
   });
 }
 
-function getContrastYIQ(hexcolor) {
-  var r = parseInt(hexcolor.substring(1, 3), 16);
-  var g = parseInt(hexcolor.substring(3, 5), 16);
-  var b = parseInt(hexcolor.substring(5, 7), 16);
-  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
-  return yiq >= 128 ? "black" : "white";
-}
-
 class Publisher {
   constructor() {
     this.subscribers = {};
@@ -403,10 +393,11 @@ class DamageClass {
   }
   update(eventType, payload) {
     switch (eventType) {
-      case TYPE_CHANGE:
+      case TYPE_CHANGE: {
         const pType = typesRecord[payload];
         this.element().innerText = pType?.move_damage_class?.name ?? "N/A";
         break;
+      }
       case TYPE_REMOVE:
         this.element().innerText = "";
         break;
@@ -425,7 +416,7 @@ class DamageStat {
   }
   update(eventType, payload) {
     switch (eventType) {
-      case TYPE_CHANGE:
+      case TYPE_CHANGE: {
         const pType = typesRecord[payload];
         const relations = pType?.damage_relations;
         const otherTypes = relations
@@ -435,6 +426,7 @@ class DamageStat {
           .map(({ name }) => name)
           .join(", ");
         break;
+      }
       case TYPE_REMOVE:
         this.element().innerText = "";
         break;
@@ -472,8 +464,13 @@ class PokemonSearch {
         );
       }
     });
+    element.addEventListener("click", (e) => {
+      e.preventDefault();
+      element.scrollIntoView({ behavior: "smooth" });
+    });
     element.addEventListener("submit", (e) => {
       e.preventDefault();
+      element.scrollIntoView({ behavior: "smooth" });
     });
 
     this._element = element;
@@ -486,11 +483,12 @@ class PokemonSearch {
   }
   update(publisherEvent, payload) {
     switch (publisherEvent) {
-      case GET_POKEMON:
+      case GET_POKEMON: {
         const input = this.element().querySelector("#pokemon-search-input");
         input.value = payload;
 
         break;
+      }
       case POKEMON_SEARCH_REMOVE:
         this.element().value = "";
         break;
@@ -518,7 +516,7 @@ class PokemonSuggestionList {
   }
   async update(publisherEvent, payload) {
     switch (publisherEvent) {
-      case POKEMON_SEARCH_QUERY:
+      case POKEMON_SEARCH_QUERY: {
         while (this.element().hasChildNodes()) {
           this.element().removeChild(this.element().lastChild);
         }
@@ -540,13 +538,14 @@ class PokemonSuggestionList {
           this.element().append(menuOption.element());
         }
         break;
+      }
       case GET_POKEMON:
       case POKEMON_SEARCH_REMOVE:
         while (this.element().hasChildNodes()) {
           this.element().removeChild(this.element().lastChild);
         }
         break;
-      case GET_POKEMON_SUGGESTED:
+      case GET_POKEMON_SUGGESTED: {
         if (this.cursor == -1 || this.suggestions.length == 0) {
           break;
         }
@@ -554,6 +553,7 @@ class PokemonSuggestionList {
         pokemonPublisher.notify(GET_POKEMON, suggestion);
         await getPokemonTypes(suggestion);
         break;
+      }
       case POKEMON_CHANGE_SUGGESTION:
         switch (payload) {
           case ARROW_UP_CODE: {
@@ -685,7 +685,7 @@ class PokemonDamageStat {
   }
   update(ev, payload) {
     switch (ev) {
-      case GET_POKEMON_RESULT:
+      case GET_POKEMON_RESULT: {
         const { damages } = payload;
         let { effect, direction, typeNo } = this;
         if (direction == "to") {
@@ -695,6 +695,7 @@ class PokemonDamageStat {
         this.element().innerText = arr.join(", ");
 
         break;
+      }
       case POKEMON_SEARCH_REMOVE:
         this.element().innerText = "";
         break;
@@ -728,5 +729,27 @@ class PokemonDealType {
         this.element().innerText = "type " + this.typeNo + " deals";
         break;
     }
+  }
+}
+
+class GuideController {
+  constructor() {
+    this.hide = true;
+    this.init();
+  }
+  init() {
+    this._element = document.querySelector("#guide-controller");
+    this._element.addEventListener("click", () => {
+      const guideElement = document.querySelector("#guide");
+      const prev = this.hide ? "hidden" : "block";
+      const next = this.hide ? "block" : "hidden";
+
+      guideElement.classList.remove(prev);
+      guideElement.classList.add(next);
+      if (next === "block") {
+        guideElement.scrollIntoView({ behavior: "smooth" });
+      }
+      this.hide = !this.hide;
+    });
   }
 }

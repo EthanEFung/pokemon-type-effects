@@ -1,18 +1,24 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="favicon.png" />
     <title>Pokémon Type Effects</title>
-    <link rel="stylesheet" href="index.css">
+    <!-- <link rel="stylesheet" href="index.css"> -->
     <script src="https://unpkg.com/pokeapi-js-wrapper/dist/index.js"></script>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-zinc-800 text-zinc-100">
     <header class="mt-4 mx-4 bg-red-900 p-2 px-4 flex items-center">
-      <img class="-rotate-45" src="pokeball.svg"></img>
+      <img class="-rotate-45" src="pokeball.svg" />
       <h1 class="ml-2 text-2xl font-bold">Pokémon Type Effects</h1>
+      <button
+        id="guide-controller"
+        class="ml-auto font-medium border rounded p-2 py-1 cursor-pointer"
+      >
+        Show Guide
+      </button>
     </header>
     <article class="m-4 flex flex-col lg:flex-row">
       <div
@@ -102,169 +108,257 @@
       </table>
     </article>
 
-    <article class="flex flex-col lg:flex-row m-4">
-      <form id="pokemon-search" class="basis-1/4 relative h-full mb-4">
-        <div class="flex">
-          <label class="w-auto py-1 text-xl font-bold"> Search: </label>
-          <input
-            id="pokemon-search-input"
-            type="text"
-            name="search"
-            placeholder="Pokémon"
-            class="border rounded border-gray-400 w-full ml-1 p-2 py-1 bg-zinc-800"
-            autocomplete="off"
-          />
-        </div>
-        <div
-          id="pokemon-suggestions"
-          class="absolute bg-zinc-800 mt-1 w-full"
-        ></div>
-      </form>
+    <div class="min-h-screen">
+      <article class="flex flex-col lg:flex-row m-4">
+        <form id="pokemon-search" class="basis-1/4 relative h-full mb-4">
+          <div class="flex">
+            <label class="w-auto py-1 text-xl font-bold"> Search: </label>
+            <input
+              id="pokemon-search-input"
+              type="text"
+              name="search"
+              placeholder="Pokémon"
+              class="border rounded border-gray-400 w-full ml-1 p-2 py-1 bg-zinc-800"
+              autocomplete="off"
+            />
+          </div>
+          <div
+            id="pokemon-suggestions"
+            class="absolute bg-zinc-800 mt-1 w-full"
+          ></div>
+        </form>
 
-      <table
-        id="pokemon-damages"
-        class="mt-2 lg:mt-0 lg:ml-2 w-full table-fixed"
-      >
-        <thead>
-          <tr>
-            <th class="border border-zinc-700 p-2 py-1 text-left align-bottom">
-              Type(s): <span id="pokemon-type-stat"></span>
-            </th>
-            <th class="border border-zinc-700 p-2 py-1 text-left align-bottom">
-              takes
-            </th>
-            <th
-              id="pokemon-type-1-deal"
-              class="border border-zinc-700 p-2 py-1 text-left align-bottom"
-            >
-              deals
-            </th>
-            <th
-              id="pokemon-type-2-deal"
-              class="border border-zinc-700 p-2 py-1 text-left align-bottom"
-            >
-              deals
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th class="border border-zinc-700 text-right align-top p-2 py-1">
-              Ultra Effective
-            </th>
-            <td
-              data-effect="quadruple"
-              data-direction="from"
-              class="pokemon-damage quadruple from border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="quadruple"
-              data-direction="to"
-              data-type="1"
-              class="pokemon-damage quadruple to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="quadruple"
-              data-direction="to"
-              data-type="2"
-              class="pokemon-damage quadruple to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-          </tr>
+        <table
+          id="pokemon-damages"
+          class="mt-2 lg:mt-0 lg:ml-2 w-full table-fixed"
+        >
+          <thead>
+            <tr>
+              <th
+                class="border border-zinc-700 p-2 py-1 text-left align-bottom"
+              >
+                Type(s): <span id="pokemon-type-stat"></span>
+              </th>
+              <th
+                class="border border-zinc-700 p-2 py-1 text-left align-bottom"
+              >
+                takes
+              </th>
+              <th
+                id="pokemon-type-1-deal"
+                class="border border-zinc-700 p-2 py-1 text-left align-bottom"
+              >
+                deals
+              </th>
+              <th
+                id="pokemon-type-2-deal"
+                class="border border-zinc-700 p-2 py-1 text-left align-bottom"
+              >
+                deals
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="border border-zinc-700 text-right align-top p-2 py-1">
+                Ultra Effective
+              </th>
+              <td
+                data-effect="quadruple"
+                data-direction="from"
+                class="pokemon-damage quadruple from border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="quadruple"
+                data-direction="to"
+                data-type="1"
+                class="pokemon-damage quadruple to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="quadruple"
+                data-direction="to"
+                data-type="2"
+                class="pokemon-damage quadruple to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+            </tr>
 
-          <tr>
-            <th class="border border-zinc-700 text-right align-top p-2 py-1">
-              Super Effective
-            </th>
-            <td
-              data-effect="double"
-              data-direction="from"
-              class="pokemon-damage double from border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="double"
-              data-direction="to"
-              data-type="1"
-              class="pokemon-damage double to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="double"
-              data-direction="to"
-              data-type="2"
-              class="pokemon-damage double to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-          </tr>
+            <tr>
+              <th class="border border-zinc-700 text-right align-top p-2 py-1">
+                Super Effective
+              </th>
+              <td
+                data-effect="double"
+                data-direction="from"
+                class="pokemon-damage double from border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="double"
+                data-direction="to"
+                data-type="1"
+                class="pokemon-damage double to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="double"
+                data-direction="to"
+                data-type="2"
+                class="pokemon-damage double to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+            </tr>
 
-          <tr>
-            <th class="border border-zinc-700 text-right align-top p-2 py-1">
-              Ineffective
-            </th>
-            <td
-              data-effect="half"
-              data-direction="from"
-              class="pokemon-damage half from border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="half"
-              data-direction="to"
-              data-type="1"
-              class="pokemon-damage half to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="half"
-              data-direction="to"
-              data-type="2"
-              class="pokemon-damage half to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-          </tr>
+            <tr>
+              <th class="border border-zinc-700 text-right align-top p-2 py-1">
+                Ineffective
+              </th>
+              <td
+                data-effect="half"
+                data-direction="from"
+                class="pokemon-damage half from border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="half"
+                data-direction="to"
+                data-type="1"
+                class="pokemon-damage half to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="half"
+                data-direction="to"
+                data-type="2"
+                class="pokemon-damage half to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+            </tr>
 
-          <tr>
-            <th class="border border-zinc-700 text-right align-top p-2 py-1">
-              Super Ineffective
-            </th>
-            <td
-              data-effect="quarter"
-              data-direction="from"
-              class="pokemon-damage quarter from border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="quarter"
-              data-direction="to"
-              data-type="1"
-              class="pokemon-damage quarter to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="quarter"
-              data-direction="to"
-              data-type="2"
-              class="pokemon-damage quarter to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-          </tr>
+            <tr>
+              <th class="border border-zinc-700 text-right align-top p-2 py-1">
+                Super Ineffective
+              </th>
+              <td
+                data-effect="quarter"
+                data-direction="from"
+                class="pokemon-damage quarter from border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="quarter"
+                data-direction="to"
+                data-type="1"
+                class="pokemon-damage quarter to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="quarter"
+                data-direction="to"
+                data-type="2"
+                class="pokemon-damage quarter to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+            </tr>
 
-          <tr>
-            <th class="border border-zinc-700 text-right align-top p-2 py-1">
-              Completely Ineffective
-            </th>
-            <td
-              data-effect="no"
-              data-direction="from"
-              class="pokemon-damage no from border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="no"
-              data-direction="to"
-              data-type="1"
-              class="pokemon-damage no to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-            <td
-              data-effect="no"
-              data-direction="to"
-              data-type="2"
-              class="pokemon-damage no to border border-zinc-600 p-2 py-1 align-top"
-            ></td>
-          </tr>
-        </tbody>
-      </table>
-    </article>
+            <tr>
+              <th class="border border-zinc-700 text-right align-top p-2 py-1">
+                Completely Ineffective
+              </th>
+              <td
+                data-effect="no"
+                data-direction="from"
+                class="pokemon-damage no from border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="no"
+                data-direction="to"
+                data-type="1"
+                class="pokemon-damage no to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+              <td
+                data-effect="no"
+                data-direction="to"
+                data-type="2"
+                class="pokemon-damage no to border border-zinc-600 p-2 py-1 align-top"
+              ></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+      <article id="guide" class="m-4 pt-2 hidden">
+        <header class="px-4">
+          <h2 class="text-xl font-medium">What is this for?</h2>
+          <p>
+            This is just a simple utility I built for myself. While playing
+            Pokemon FireRed, I kept forgetting Pokemon types and kept making
+            mistakes in battle. This is just a way for me to remember damage
+            relationships between types, and the damage relationships each
+            Pokemon possess. Hopefully you find this useful too.
+          </p>
+        </header>
+        <aside class="border rounded bg-zinc-700 mt-2 p-4 pt-3">
+          <p class="mt-1">
+            This page uses the National Pokedex which pulls all "up to date"
+            data of all generations. Of course, Pokemon has changed over the
+            different generations. For instance the "fairy" type was introduced
+            in generation VI, and Pokemon from previous generations like
+            Jigglypuff inherited this type. This tool might not reflect
+            accurately the damage relationships of your particular generation.
+          </p>
+          <p>
+            Also to note: while the majority of the data is pulled for this page
+            is from the official Nintendo Pokemon ROMs, data regarding "Sword"
+            and "Shield" are not.
+          </p>
+        </aside>
+        <main>
+          <h2 class="text-xl mt-6 px-4 font-medium">How do you use this?</h2>
+          <p class="px-4">
+            This page can be broken up into two modules. The types module, and
+            the Pokemon module. The types module is at the top consisting of the
+            buttons that represent every type of Pokemon spanning the 8
+            generations to date and the table immediately following the buttons.
+            When you click one of the buttons, the data related to the type will
+            populate in the table. The Pokemon module is the search bar and the
+            table following.
+          </p>
+
+          <p class="mt-1 px-4">
+            Each table has a columns representing the direction of a move type's
+            effect, and rows that represent the severity of the move. For
+            instance in the types module, if "fire" is selected, it "takes"
+            "super effective" damage from ground, rock and water type moves. The
+            Pokemon module table is more advanced because while it shares the
+            same "takes" column of the types module, each Pokemon deals
+            different damage depending on the move type. To account for dual
+            type Pokemon, the table breaks the damage the Pokemon deals based on
+            move type.
+          </p>
+          <aside class="border rounded bg-zinc-700 mt-2 p-4 pt-3">
+            Just because the Pokemon has dual types doesn't mean the Pokemon
+            cannot know or be taught moves of different types. However,
+            same-type attack bonus or STAB cause Pokemon to increase attack
+            power by 50% when using the moves that match the Pokemon's type(s).
+          </aside>
+
+          <h2 class="text-xl mt-6 px-4 font-medium">
+            Understanding move type effectiveness
+          </h2>
+          <p class="px-4">
+            Type effectiveness calculations depend on the move type and the
+            target Pokemon's type(s).
+          </p>
+          <ul class="ml-4 list-disc mt-1 px-8">
+            <li>Super Effective: double damage</li>
+            <li>Ineffective: half damage</li>
+            <li>Completely Ineffective: no damage</li>
+          </ul>
+          <p class="mt-1 px-4">
+            When considering two types the effects are multiplicative.
+          </p>
+          <ul class="ml-4 list-disc mt-1 px-8">
+            <li>Ultra Effective: quadruple damage</li>
+            <li>Super Ineffective: quarter damage</li>
+          </ul>
+          <p class="mt-1 px-4">
+            With the exception of "Pokemon Legends: Arceus" all games follow
+            these effectiveness rules. Ultra effectiveness in Arceus does 2.5
+            times damage, and Super Ineffectiveness does 0.4 times damage.
+          </p>
+        </main>
+      </article>
+    </div>
 
     <script src="init.js"></script>
   </body>
